@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="CreateUser_styling.css" />
+    <title>Sign up</title>
+  </head>
+  <body>
+    <script src="https://www.gstatic.com/firebasejs/7.6.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/live/3.1/firebase.js"></script>
+
+    <script type="module">
+      //{ getDatabase,set,ref}
+      // 8404
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+      // import {getFirestore} from'firebase/firestore';
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+      import {
+        getDatabase,
+        set,
+        ref,
+      } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyDu86qU6LwsXzE64c0DhTyQQV0kSv5EneQ",
+        authDomain: "chatting-website-cfecc.firebaseapp.com",
+        databaseURL:
+          "https://chatting-website-cfecc-default-rtdb.firebaseio.com",
+        projectId: "chatting-website-cfecc",
+        storageBucket: "chatting-website-cfecc.appspot.com",
+        messagingSenderId: "514839764180",
+        appId: "1:514839764180:web:f76894f19d78d2f8986f41",
+        measurementId: "G-KW7CG7BX7C",
+      };
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const database = getDatabase();
+      const auth = getAuth();
+      // initializeApp(config);
+      // const firestore = getFirestore();
+      firebase.initializeApp(firebaseConfig);
+      const submit = document.getElementById("submit");
+
+      var idpassword = document.getElementById("id_password").value;
+      var idcpassword = document.getElementById("id_cpassword").value;
+
+      var contactFormDB = firebase.database().ref("contactForm");
+
+      submit.addEventListener("click", (submitForm) => {
+        var email = document.getElementById("Email").value;
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("id_password").value;
+        var cpassword = document.getElementById("id_cpassword").value;
+        if (password === cpassword) {
+          createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+              // Signed in
+              const user = userCredential.user;
+              var username = document.getElementById("username").value;
+              var email = document.getElementById("Email").value;
+              console.log(email, username);
+
+              set(ref(database, "users/" + user.uid), {
+                username: username,
+                email:email,
+              });
+
+              alert("user created");
+              // window.location.href = "pain_page.html";
+              // ...
+            })
+
+            .catch((error) => {
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              alert(errorMessage);
+              // ..
+            });
+        }
+      });
+    </script>
+    <script src="CreateUser_Script.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+    />
+    <div class="container">
+      <form onsubmit="signup(event)" id="contactForm">
+        <h2>Sign up</h2>
+
+        <input
+          type="text"
+          id="Email"
+          name="Email"
+          placeholder="Email Address "
+          required=""
+          oninput="check_email()"
+        />
+        <br />
+        <input
+          type="text"
+          id="fName"
+          name="fName"
+          placeholder="Full Name"
+          required=""
+        />
+        <br />
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Username"
+          required=""
+          oninput="check_username()"
+        />
+        <br />
+
+        <input
+          type="password"
+          name="password"
+          required=""
+          id="id_password"
+          placeholder="Password"
+          onInput="check_conditions()"
+        />
+        <i class="far fa-eye" id="togglePassword" onclick="eye()"></i> <br />
+        <input
+          type="password"
+          id="id_cpassword"
+          name="CPassword"
+          placeholder="Confirm Password"
+          required=""
+          oninput="check_password();"
+        />
+        <i class="far fa-eye" id="togglecPassword" onclick="eye()"></i> <br />
+        <br />
+        <div id="check0">
+          <i class="far fa-check-circle"></i>
+          <span>Length more than 8 characters</span>
+        </div>
+        <div id="check1">
+          <i class="far fa-check-circle"></i>
+          <span>Length less than 30 characters </span>
+        </div>
+        <div id="check2">
+          <i class="far fa-check-circle"></i>
+          <span>Contains numerical characters</span>
+        </div>
+        <div id="check3">
+          <i class="far fa-check-circle"></i>
+          <span>Contains capital letters </span>
+        </div>
+        <div id="check4">
+          <i class="far fa-check-circle"></i>
+          <span>Contains special characters</span>
+        </div>
+        <p id="message"></p>
+        <p id="message1"></p>
+        <p id="message2"></p>
+        <br />
+      </form>
+      <button id="submit" onclick="all_fields();">Sign Up</button>
+
+      <label for="Have an account" id="SignIn">Already have an account</label>
+      <a href="Login_page.html" id="login"> SignIn</a>
+    </div>
+  </body>
+</html>
